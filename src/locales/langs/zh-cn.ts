@@ -156,7 +156,8 @@ const local: App.I18n.Schema = {
     'iframe-page': '外链页面',
     home: '首页',
     question: '题目',
-    submit: '提交'
+    submit: '提交',
+    'do-question': '做题'
   },
   page: {
     login: {

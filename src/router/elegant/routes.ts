@@ -40,6 +40,17 @@ export const generatedRoutes: GeneratedRoute[] = [
     }
   },
   {
+    name: 'do-question',
+    path: '/do-question',
+    component: 'layout.blank$view.do-question',
+    meta: {
+      title: 'do-question',
+      i18nKey: 'route.do-question',
+      constant: true,
+      hideInMenu: true
+    }
+  },
+  {
     name: 'home',
     path: '/home',
     component: 'layout.base$view.home',

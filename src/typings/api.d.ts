@@ -5,12 +5,14 @@
  */
 declare namespace Api {
   namespace Common {
+    type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'pageSize'>;
+
     /** common params of paginating */
     interface PaginatingCommonParams {
       /** current page number */
       current: number;
       /** page size */
-      size: number;
+      pageSize: number;
       /** total count */
       total: number;
     }
@@ -81,5 +83,60 @@ declare namespace Api {
       routes: MenuRoute[];
       home: import('@elegant-router/types').LastLevelRouteKey;
     }
+  }
+
+  namespace Question {
+    import CommonSearchParams = Api.Common.CommonSearchParams;
+
+    /** question search params */
+    type QuestionSearchParams = CommonType.RecordNullable<
+      Pick<Api.Question.QuestionQueryRequest, 'title' | 'content' | 'tags'> & CommonSearchParams
+    >;
+
+    type QuestionQueryRequest = {
+      answer: string;
+      content: string;
+      current: number;
+      id: number;
+      sortField: string;
+      sortOrder: string;
+      tags: Array<string>;
+      title: string;
+      userId: number;
+    };
+
+    type QuestionList = Common.PaginatingQueryRecord<QuestionVO>;
+
+    type QuestionVO = {
+      acceptedNum: number;
+      content: string;
+      createTime: string;
+      favourNum: number;
+      id: number;
+      judgeConfig: JudgeConfig;
+      submitNum: number;
+      tags: Array<string>;
+      thumbNum: number;
+      title: string;
+      updateTime: string;
+      userId: number;
+      userVO: UserVO;
+      passRate: null;
+    };
+
+    type JudgeConfig = {
+      memoryLimit: number;
+      stackLimit: number;
+      timeLimit: number;
+    };
+
+    type UserVO = {
+      createTime: string;
+      id: number;
+      userAvatar: string;
+      userName: string;
+      userProfile: string;
+      userRole: string;
+    };
   }
 }
