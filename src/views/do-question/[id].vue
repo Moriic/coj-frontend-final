@@ -61,6 +61,12 @@ const form = ref({
 //   loadData();
 // });
 //
+interface Props {
+  id: string;
+}
+
+const props = defineProps<Props>();
+
 const changeCode = (value: string) => {
   form.value.code = value;
 };
@@ -75,6 +81,7 @@ const items = [
 
 <template>
   <div class="h-full">
+    {{ id }}
     <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
       <NGi span="24 s:24 m:12">
         <NCard class="card-wrapper">
