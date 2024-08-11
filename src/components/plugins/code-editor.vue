@@ -55,7 +55,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="code-editor" ref="codeEditorRef" style="min-height: 400px; height: 90vh" />
+  <div id="code-editor" ref="codeEditorRef" class="min-h-400px" />
 </template>
 
 <style scoped></style>

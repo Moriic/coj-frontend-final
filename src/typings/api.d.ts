@@ -105,14 +105,14 @@ declare namespace Api {
       userId: number;
     };
 
-    type QuestionList = Common.PaginatingQueryRecord<QuestionVO>;
+    type QuestionVOList = Common.PaginatingQueryRecord<QuestionVO>;
 
     type QuestionVO = {
       acceptedNum: number;
       content: string;
       createTime: string;
       favourNum: number;
-      id: number;
+      id: string;
       judgeConfig: JudgeConfig;
       submitNum: number;
       tags: Array<string>;
@@ -137,6 +137,38 @@ declare namespace Api {
       userName: string;
       userProfile: string;
       userRole: string;
+    };
+
+    type QuestionSubmit = {
+      code?: string;
+      language?: string;
+      questionId?: string;
+    };
+
+    type SubmitRecord = {
+      questionId?: string;
+      language?: string;
+      status?: number;
+    };
+
+    type QuestionSubmitVO = {
+      code?: string;
+      createTime?: string;
+      id?: number;
+      judgeInfo?: JudgeInfo;
+      language?: string;
+      questionId?: number;
+      questionVO?: QuestionVO;
+      status?: number;
+      updateTime?: string;
+      userId?: number;
+      userVO?: UserVO;
+    };
+
+    export type JudgeInfo = {
+      memory?: number;
+      message?: string;
+      time?: number;
     };
   }
 }

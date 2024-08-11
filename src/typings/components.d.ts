@@ -37,6 +37,8 @@ declare module 'vue' {
     IconUilSearch: typeof import('~icons/uil/search')['default']
     LangSwitch: typeof import('./../components/common/lang-switch.vue')['default']
     LookForward: typeof import('./../components/custom/look-forward.vue')['default']
+    MdEditor: typeof import('./../components/plugins/md-editor.vue')['default']
+    MdViewer: typeof import('./../components/plugins/md-viewer.vue')['default']
     MenuToggler: typeof import('./../components/common/menu-toggler.vue')['default']
     NAlert: typeof import('naive-ui')['NAlert']
     NBreadcrumb: typeof import('naive-ui')['NBreadcrumb']

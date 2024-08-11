@@ -56,6 +56,9 @@ importers:
       tailwind-merge:
         specifier: 2.4.0
         version: 2.4.0
+      vditor:
+        specifier: ^3.10.5
+        version: 3.10.5
       vue:
         specifier: 3.4.35
         version: 3.4.35(typescript@5.5.4)
@@ -1989,6 +1992,9 @@ packages:
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
+
+  diff-match-patch@1.0.5:
+    resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
 
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
@@ -4647,6 +4653,9 @@ packages:
     peerDependencies:
       vue: ^3.0.11
 
+  vditor@3.10.5:
+    resolution: {integrity: sha512-TEhuErdRCdtpeNntbU+SA0/aGuUSEVBbPkNkH0oov2ZKyis20PqtG+az2EmIomCefKlCXcpcKMM/jglv3fKkig==}
+
   vite-hot-client@0.2.3:
     resolution: {integrity: sha512-rOGAV7rUlUHX89fP2p2v0A2WWvV3QMX2UYq0fRqsWSvFvev4atHWqjwGoKaZT1VTKyLGk533ecu3eyd0o59CAg==}
     peerDependencies:
@@ -6695,6 +6704,8 @@ snapshots:
   devlop@1.1.0:
     dependencies:
       dequal: 2.0.3
+
+  diff-match-patch@1.0.5: {}
 
   dir-glob@3.0.1:
     dependencies:
@@ -9776,6 +9787,10 @@ snapshots:
     dependencies:
       evtd: 0.2.4
       vue: 3.4.35(typescript@5.5.4)
+
+  vditor@3.10.5:
+    dependencies:
+      diff-match-patch: 1.0.5
 
   vite-hot-client@0.2.3(vite@5.3.5(@types/node@22.0.1)(sass@1.77.8)):
     dependencies:

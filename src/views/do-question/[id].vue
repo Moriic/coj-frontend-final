@@ -1,30 +1,14 @@
 <script setup lang="ts">
-import { computed, defineProps, onMounted, ref, withDefaults } from 'vue';
+import { computed, defineProps, h, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import type { DataTableColumns } from 'naive-ui';
+import { NTag } from 'naive-ui';
 import { useAppStore } from '@/store/modules/app';
-// import message from '@arco-design/web-vue/es/message';
-// import type { QuestionSubmitAddRequest, QuestionVO } from '../../../generated';
-// import { QuestionControllerService } from '../../../generated';
-//
-// interface Props {
-//   id: string;
-// }
-//
-// const props = withDefaults(defineProps<Props>(), {
-//   id: () => ''
-// });
-//
-// const question = ref<QuestionVO>();
-//
-// const loadData = async () => {
-//   const res = await QuestionControllerService.getQuestionVoByIdUsingGet(props.id as any);
-//   if (res.code === 0) {
-//     question.value = res.data;
-//   } else {
-//     message.error(`加载失败，${res.message}`);
-//   }
-// };
-//
-const form = ref({
+import { useTabStore } from '@/store/modules/tab';
+import { fetchGetQuestionVOById, fetchSubmitQuestion, fetchSubmitRecord } from '@/service/api';
+
+const submitParams = ref<Api.Question.QuestionSubmit>({
+  questionId: '',
   language: 'java',
   code:
     'import java.util.*;\n' +
@@ -38,65 +22,146 @@ const form = ref({
     '\t}\n' +
     '}'
 });
-//
-// /** 提交代码 */
-// const doSubmit = async () => {
-//   if (!question.value?.id) {
-//     return;
-//   }
-//
-//   const res = await QuestionControllerService.doQuestionSubmitUsingPost({
-//     ...form.value,
-//     questionId: question.value.id
-//   });
-//   if (res.code === 0) {
-//     message.success('提交成功');
-//   } else {
-//     message.error(`提交失败,${res.message}`);
-//   }
-// };
 
-// /** 页面加载时，请求数据 */
-// onMounted(() => {
-//   loadData();
-// });
-//
+const recordParams = ref<Api.Question.SubmitRecord>({
+  questionId: '',
+  language: 'java',
+  status: -1
+});
+
+const tabStore = useTabStore();
+
 interface Props {
   id: string;
 }
 
 const props = defineProps<Props>();
-
-const changeCode = (value: string) => {
-  form.value.code = value;
-};
+const route = useRoute();
 const appStore = useAppStore();
 const gap = computed(() => (appStore.isMobile ? 0 : 16));
-const items = [
-  { id: 'gaode', label: '高德地图' },
-  { id: 'tencent', label: '腾讯地图' },
-  { id: 'baidu', label: '百度地图' }
+const activeTab = ref();
+const question = ref<Api.Question.QuestionVO | null>();
+const submitRecord = ref<Api.Question.QuestionSubmitVO[] | null>();
+// const submitRecord = ref<>();
+const options = [
+  {
+    value: 'java',
+    label: 'java'
+  },
+  {
+    value: 'cpp',
+    label: 'cpp',
+    disabled: true
+  },
+  {
+    value: 'go',
+    label: 'go',
+    disabled: true
+  }
 ];
+const recordColumns: DataTableColumns<Api.Question.QuestionSubmitVO> = [
+  {
+    key: 'message',
+    title: '结果',
+    render: row => {
+      return h(
+        NTag,
+        {
+          type: row.judgeInfo?.message === 'Accepted' ? 'success' : 'error',
+          style: { marginRight: '8px' },
+          size: 'small'
+        },
+        {
+          default: () => row.judgeInfo?.message
+        }
+      );
+    }
+  },
+  {
+    key: 'language',
+    title: '编程语言'
+  },
+  {
+    key: 'time',
+    title: '执行用时',
+    render: row => `${row.judgeInfo?.time}ms`
+  },
+  {
+    key: 'createTime',
+    title: '提交时间'
+  }
+];
+const getQuestion = async () => {
+  const { data } = await fetchGetQuestionVOById(props.id);
+  question.value = data;
+};
+
+const getSubmitRecord = async () => {
+  const { data } = await fetchSubmitRecord(recordParams.value);
+  submitRecord.value = data;
+};
+
+onMounted(() => {
+  tabStore.setTabLabel(route.query.title as string);
+  submitParams.value.questionId = props.id;
+  recordParams.value.questionId = props.id;
+
+  getQuestion();
+  getSubmitRecord();
+});
+
+const changeCode = (value: string) => {
+  submitParams.value.code = value;
+};
+
+const submitQuestion = async () => {
+  const { error } = await fetchSubmitQuestion(submitParams.value);
+  if (!error) {
+    window.$message?.success('提交成功');
+    activeTab.value = 'submitRecord';
+    await getSubmitRecord();
+  }
+};
 </script>
 
 <template>
-  <div class="h-full">
-    {{ id }}
-    <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
-      <NGi span="24 s:24 m:12">
-        <NCard class="card-wrapper">
-          <NTabs type="line">
-            <NTabPane v-for="item in items" :key="item.id" :name="item.id" :tab="item.label"></NTabPane>
+  <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
+    <NGi span="24 s:24 m:12">
+      <div class="h-full min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+        <NCard class="sm:flex-1-hidden card-wrapper card-wrapper" content-style="padding: 0px 20px">
+          <NTabs v-model:value="activeTab" type="line" animated>
+            <NTabPane name="description" tab="题目描述">
+              <MdViewer :value="question?.content || ''"></MdViewer>
+            </NTabPane>
+            <NTabPane name="submitRecord" tab="提交记录">
+              <NDataTable :columns="recordColumns" :data="submitRecord" />
+            </NTabPane>
+            <NTabPane name="answer" tab="题解" disabled></NTabPane>
           </NTabs>
         </NCard>
-      </NGi>
-      <NGi span="24 s:24 m:12">
-        <NCard class="card-wrapper">
-          <CodeEditor :value="form.code as string" :language="form.language" :handle-change="changeCode" />
+      </div>
+    </NGi>
+    <NGi span="24 s:24 m:12">
+      <div class="h-full min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+        <NCard class="sm:flex-1-hidden card-wrapper card-wrapper" size="small">
+          <template #header>
+            <div class="flex justify-between p-x-10px">
+              <div class="flex gap-5">
+                <span>代码编写</span>
+                <NSelect v-model:value="submitParams.language" size="small" :options="options" class="w-100px" />
+              </div>
+              <NButton strong size="small" round type="success" @click="submitQuestion">提交代码</NButton>
+            </div>
+          </template>
+          <CodeEditor
+            :value="submitParams.code as string"
+            :language="submitParams.language"
+            :handle-change="changeCode"
+          />
         </NCard>
-      </NGi>
-    </NGrid>
-  </div>
+      </div>
+    </NGi>
+  </NGrid>
 </template>
 
-<style></style>
+<style scoped></style>

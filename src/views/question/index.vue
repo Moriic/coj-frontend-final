@@ -1,17 +1,22 @@
 <script setup lang="tsx">
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { h } from 'vue';
-import { fetchGetQuestionList } from '@/service/api';
+import { fetchGetQuestionVOList } from '@/service/api';
 // import { $t } from '@/locales';
 import { useAppStore } from '@/store/modules/app';
 // import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 import { useTable, useTableOperate } from '@/hooks/common/table';
-import UserOperateDrawer from './modules/user-operate-drawer.vue';
-import UserSearch from './modules/user-search.vue';
+import { useRouterPush } from '@/hooks/common/router';
+// import UserOperateDrawer from './modules/user-operate-drawer.vue';
+// import UserSearch from './modules/user-search.vue';
 
 const appStore = useAppStore();
-const goDoQuestion = (id: number) => {
-  console.log(id);
+const { routerPushByKey } = useRouterPush();
+const goDoQuestion = (id: string, title: string) => {
+  routerPushByKey('do-question', {
+    query: { title },
+    params: { id }
+  });
 };
 const {
   columns,
@@ -24,7 +29,7 @@ const {
   searchParams,
   resetSearchParams
 } = useTable({
-  apiFn: fetchGetQuestionList,
+  apiFn: fetchGetQuestionVOList,
   showTotal: true,
   apiParams: {
     current: 1,
@@ -87,7 +92,7 @@ const {
       title: '操作',
       align: 'center',
       render: row => (
-        <NButton type="primary" size="small" onClick={() => goDoQuestion(row.id)}>
+        <NButton type="primary" size="small" onClick={() => goDoQuestion(row.id, row.title)}>
           做题
         </NButton>
       )
