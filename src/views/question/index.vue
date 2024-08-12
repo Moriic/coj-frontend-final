@@ -2,11 +2,12 @@
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { h } from 'vue';
 import { fetchGetQuestionVOList } from '@/service/api';
-// import { $t } from '@/locales';
+import { $t } from '@/locales';
 import { useAppStore } from '@/store/modules/app';
 // import { enableStatusRecord, userGenderRecord } from '@/constants/business';
 import { useTable, useTableOperate } from '@/hooks/common/table';
 import { useRouterPush } from '@/hooks/common/router';
+import QuestionOperate from '@/views/question/modules/question-operate.vue';
 // import UserOperateDrawer from './modules/user-operate-drawer.vue';
 // import UserSearch from './modules/user-search.vue';
 
@@ -82,76 +83,35 @@ const {
       key: 'passRate',
       title: '通过率',
       align: 'center',
-      minWidth: 100,
       render: row => {
-        return row.submitNum === 0 ? '0.0%' : `${(row.acceptedNum / row.submitNum).toFixed(2)}%`;
+        return row.submitNum === 0 ? '0.0%' : `${((row.acceptedNum / row.submitNum) * 100).toFixed(2)}%`;
       }
     },
     {
       key: 'operate',
-      title: '操作',
+      title: $t('common.operate'),
       align: 'center',
       render: row => (
-        <NButton type="primary" size="small" onClick={() => goDoQuestion(row.id, row.title)}>
-          做题
-        </NButton>
+        <div class="flex-center gap-8px">
+          <NButton type="primary" size="small" onClick={() => goDoQuestion(row.id, row.title)}>
+            做题
+          </NButton>
+          <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
+            {$t('common.edit')}
+          </NButton>
+          <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
+            {{
+              default: () => $t('common.confirmDelete'),
+              trigger: () => (
+                <NButton type="error" ghost size="small">
+                  {$t('common.delete')}
+                </NButton>
+              )
+            }}
+          </NPopconfirm>
+        </div>
       )
     }
-    // {
-    //   key: 'userPhone',
-    //   title: $t('page.manage.user.userPhone'),
-    //   align: 'center',
-    //   width: 120
-    // },
-    // {
-    //   key: 'userEmail',
-    //   title: $t('page.manage.user.userEmail'),
-    //   align: 'center',
-    //   minWidth: 200
-    // },
-    // {
-    //   key: 'status',
-    //   title: $t('page.manage.user.userStatus'),
-    //   align: 'center',
-    //   width: 100,
-    //   render: row => {
-    //     if (row.status === null) {
-    //       return null;
-    //     }
-    //
-    //     const tagMap: Record<Api.Common.EnableStatus, NaiveUI.ThemeColor> = {
-    //       1: 'success',
-    //       2: 'warning'
-    //     };
-    //
-    //     const label = $t(enableStatusRecord[row.status]);
-    //
-    //     return <NTag type={tagMap[row.status]}>{label}</NTag>;
-    //   }
-    // },
-    // {
-    //   key: 'operate',
-    //   title: $t('common.operate'),
-    //   align: 'center',
-    //   width: 130,
-    //   render: row => (
-    //     <div class="flex-center gap-8px">
-    //       <NButton type="primary" ghost size="small" onClick={() => edit(row.id)}>
-    //         {$t('common.edit')}
-    //       </NButton>
-    //       <NPopconfirm onPositiveClick={() => handleDelete(row.id)}>
-    //         {{
-    //           default: () => $t('common.confirmDelete'),
-    //           trigger: () => (
-    //             <NButton type="error" ghost size="small">
-    //               {$t('common.delete')}
-    //             </NButton>
-    //           )
-    //         }}
-    //       </NPopconfirm>
-    //     </div>
-    //   )
-    // }
   ]
 });
 
@@ -174,14 +134,14 @@ async function handleBatchDelete() {
   onBatchDeleted();
 }
 
-function handleDelete(id: number) {
+function handleDelete(id: string) {
   // request
   console.log(id);
 
   onDeleted();
 }
 
-function edit(id: number) {
+function edit(id: string) {
   handleEdit(id);
 }
 </script>

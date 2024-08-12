@@ -6,6 +6,16 @@ import { useThemeStore } from '@/store/modules/theme';
 
 const theme = useThemeStore();
 
+interface Props {
+  value?: string;
+  handleChange?: (v: string) => void;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  value: '',
+  handleChange: () => {}
+});
+
 const vditor = ref<Vditor>();
 const domRef = ref<HTMLElement>();
 
@@ -15,7 +25,13 @@ function renderVditor() {
     minHeight: 400,
     theme: theme.darkMode ? 'dark' : 'classic',
     icon: 'material',
-    cache: { enable: false }
+    cache: { enable: false },
+    after() {
+      vditor.value?.setValue(props.value);
+    },
+    input(value) {
+      props.handleChange(value);
+    }
   });
 }
 

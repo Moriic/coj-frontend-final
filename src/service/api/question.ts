@@ -25,7 +25,7 @@ export function fetchSubmitQuestion(params?: Api.Question.QuestionSubmit) {
   });
 }
 
-export function fetchSubmitRecord(params?: Api.Question.SubmitRecord) {
+export function fetchSubmitRecord(params?: Api.Question.SubmitRecordParams) {
   return request<Api.Question.QuestionSubmitVO[]>({
     url: '/question/question_submit/list/my',
     method: 'POST',

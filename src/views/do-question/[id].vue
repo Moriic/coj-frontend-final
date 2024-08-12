@@ -23,10 +23,12 @@ const submitParams = ref<Api.Question.QuestionSubmit>({
     '}'
 });
 
-const recordParams = ref<Api.Question.SubmitRecord>({
+const recordParams = ref<Api.Question.SubmitRecordParams>({
   questionId: '',
   language: 'java',
-  status: -1
+  status: -1,
+  sortField: 'create_time',
+  sortOrder: 'descend'
 });
 
 const tabStore = useTabStore();

@@ -145,10 +145,12 @@ declare namespace Api {
       questionId?: string;
     };
 
-    type SubmitRecord = {
+    type SubmitRecordParams = {
       questionId?: string;
       language?: string;
       status?: number;
+      sortField?: string;
+      sortOrder?: string;
     };
 
     type QuestionSubmitVO = {
