@@ -121,7 +121,13 @@ declare namespace Api {
       updateTime: string;
       userId: number;
       userVO: UserVO;
+      judgeCase: Array<JudgeCase>;
       passRate: null;
+    };
+
+    type JudgeCase = {
+      input: string;
+      output: string;
     };
 
     type JudgeConfig = {

@@ -6,14 +6,18 @@ import { useThemeStore } from '@/store/modules/theme';
 
 const theme = useThemeStore();
 
+interface Emits {
+  (e: 'handleChange', v: string): void;
+}
+
+const emit = defineEmits<Emits>();
+
 interface Props {
   value?: string;
-  handleChange?: (v: string) => void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  value: '',
-  handleChange: () => {}
+  value: ''
 });
 
 const vditor = ref<Vditor>();
@@ -30,10 +34,17 @@ function renderVditor() {
       vditor.value?.setValue(props.value);
     },
     input(value) {
-      props.handleChange(value);
+      emit('handleChange', value);
     }
   });
 }
+
+watch(
+  () => props.value,
+  () => {
+    vditor.value?.setValue(props.value);
+  }
+);
 
 const stopHandle = watch(
   () => theme.darkMode,
@@ -54,9 +65,7 @@ onUnmounted(() => {
 
 <template>
   <div class="h-full">
-    <NCard title="markdown插件" :bordered="false" class="card-wrapper">
-      <div ref="domRef"></div>
-    </NCard>
+    <div ref="domRef"></div>
   </div>
 </template>
 

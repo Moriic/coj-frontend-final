@@ -173,12 +173,12 @@ function edit(id: string) {
         :pagination="mobilePagination"
         class="sm:h-full"
       />
-      <!--      <UserOperateDrawer-->
-      <!--        v-model:visible="drawerVisible"-->
-      <!--        :operate-type="operateType"-->
-      <!--        :row-data="editingData"-->
-      <!--        @submitted="getDataByPage"-->
-      <!--      />-->
+      <QuestionOperate
+        v-model:visible="drawerVisible"
+        :operate-type="operateType"
+        :row-data="editingData"
+        @submitted="getDataByPage"
+      />
     </NCard>
   </div>
 </template>
