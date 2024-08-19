@@ -164,6 +164,7 @@ declare namespace Api {
       createTime?: string;
       id?: number;
       judgeInfo?: JudgeInfo;
+      errorMessage?: string;
       language?: string;
       questionId?: number;
       questionVO?: QuestionVO;

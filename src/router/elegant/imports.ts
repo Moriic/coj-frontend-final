@@ -23,5 +23,4 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   "do-question": () => import("@/views/do-question/[id].vue"),
   home: () => import("@/views/home/index.vue"),
   question: () => import("@/views/question/index.vue"),
-  submit: () => import("@/views/submit/index.vue"),
 };

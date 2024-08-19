@@ -2,6 +2,9 @@
 import { onMounted, ref, watch } from 'vue';
 import 'vditor/dist/index.css';
 import Vditor from 'vditor';
+import { useThemeStore } from '@/store/modules/theme';
+
+const theme = useThemeStore();
 
 interface Props {
   value?: string;
@@ -11,9 +14,13 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const domRef = ref<HTMLDivElement>();
-
+// let vditor = null
 const renderMarkdown = () => {
-  Vditor.preview(domRef.value, props.value, {});
+  Vditor.preview(domRef.value, props.value, {
+    theme: {
+      current: theme.darkMode ? 'dark' : 'light'
+    }
+  });
 };
 
 onMounted(() => {
@@ -22,6 +29,13 @@ onMounted(() => {
 
 watch(
   () => props.value,
+  () => {
+    renderMarkdown();
+  }
+);
+
+watch(
+  () => theme.darkMode,
   () => {
     renderMarkdown();
   }

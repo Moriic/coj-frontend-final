@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, defineProps, h, onMounted, ref } from 'vue';
+import { computed, h, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import type { DataTableColumns } from 'naive-ui';
-import { NTag } from 'naive-ui';
+import { NButton, NSpin, NTag } from 'naive-ui';
 import { useAppStore } from '@/store/modules/app';
 import { useTabStore } from '@/store/modules/tab';
-import { fetchGetQuestionVOById, fetchSubmitQuestion, fetchSubmitRecord } from '@/service/api';
+import { fetchGetQuestionVOById, fetchGetSubmitById, fetchGetSubmitList, fetchSubmitQuestion } from '@/service/api';
+import QuestionSubmitVO = Api.Question.QuestionSubmitVO;
 
 const submitParams = ref<Api.Question.QuestionSubmit>({
   questionId: '',
@@ -44,7 +45,8 @@ const gap = computed(() => (appStore.isMobile ? 0 : 16));
 const activeTab = ref();
 const question = ref<Api.Question.QuestionVO | null>();
 const submitRecord = ref<Api.Question.QuestionSubmitVO[] | null>();
-// const submitRecord = ref<>();
+const visible = ref(false);
+let intervalId: any;
 const options = [
   {
     value: 'java',
@@ -66,6 +68,9 @@ const recordColumns: DataTableColumns<Api.Question.QuestionSubmitVO> = [
     key: 'message',
     title: '结果',
     render: row => {
+      if (row.judgeInfo?.message === '判题中') {
+        return h('div', { class: 'flex gap-5px' }, [h(NSpin, { size: 'small' }), '判题中']);
+      }
       return h(
         NTag,
         {
@@ -91,16 +96,64 @@ const recordColumns: DataTableColumns<Api.Question.QuestionSubmitVO> = [
   {
     key: 'createTime',
     title: '提交时间'
+  },
+  {
+    key: 'operator',
+    title: '操作',
+    render: row => {
+      return h(
+        NButton,
+        {
+          type: 'primary',
+          size: 'small',
+          onClick: () => {
+            visible.value = true;
+          }
+        },
+        {
+          default: () => '查看详情'
+        }
+      );
+    }
   }
 ];
+
+const loading: QuestionSubmitVO = {
+  judgeInfo: {
+    message: '判题中',
+    time: '---'
+  },
+  language: submitParams.value.language,
+  createTime: '---'
+};
 const getQuestion = async () => {
   const { data } = await fetchGetQuestionVOById(props.id);
   question.value = data;
 };
 
 const getSubmitRecord = async () => {
-  const { data } = await fetchSubmitRecord(recordParams.value);
+  const { data } = await fetchGetSubmitList(recordParams.value);
   submitRecord.value = data;
+};
+
+const changeCode = (value: string) => {
+  submitParams.value.code = value;
+};
+
+const submitQuestion = async () => {
+  const { data: id, error } = await fetchSubmitQuestion(submitParams.value);
+  if (!error) {
+    window.$message?.success('提交成功');
+    submitRecord.value?.unshift(loading);
+    activeTab.value = 'submitRecord';
+    intervalId = setInterval(async () => {
+      const { data: submit } = await fetchGetSubmitById(id);
+      if (submit?.status === 2 || submit?.status === 3) {
+        clearInterval(intervalId); // 停止定时器
+        await getSubmitRecord();
+      }
+    }, 2000); // 每隔 2 秒执行一次
+  }
 };
 
 onMounted(() => {
@@ -111,19 +164,6 @@ onMounted(() => {
   getQuestion();
   getSubmitRecord();
 });
-
-const changeCode = (value: string) => {
-  submitParams.value.code = value;
-};
-
-const submitQuestion = async () => {
-  const { error } = await fetchSubmitQuestion(submitParams.value);
-  if (!error) {
-    window.$message?.success('提交成功');
-    activeTab.value = 'submitRecord';
-    await getSubmitRecord();
-  }
-};
 </script>
 
 <template>
@@ -155,6 +195,7 @@ const submitQuestion = async () => {
               <NButton strong size="small" round type="success" @click="submitQuestion">提交代码</NButton>
             </div>
           </template>
+
           <CodeEditor
             :value="submitParams.code as string"
             :language="submitParams.language"

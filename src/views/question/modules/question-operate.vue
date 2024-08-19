@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue';
-import { fetchUpdateQuestion } from '@/service/api';
+import { computed, reactive, ref, watch } from 'vue';
+import { fetchAddQuestion, fetchUpdateQuestion } from '@/service/api';
 
 interface Props {
   operateType: NaiveUI.TableOperateType;
   rowData: Api.Question.QuestionVO | null;
 }
+
 interface Emits {
   (e: 'submitted'): void;
 }
 
 const emit = defineEmits<Emits>();
-
 const props = defineProps<Props>();
+const visible = defineModel<boolean>('visible', {
+  default: false
+});
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
@@ -21,11 +24,8 @@ const title = computed(() => {
   };
   return titles[props.operateType];
 });
-const model = reactive(createDefaultModel());
-const visible = defineModel<boolean>('visible', {
-  default: false
-});
-function createDefaultModel() {
+
+const createDefaultModel = () => {
   return {
     title: '',
     tags: [],
@@ -43,25 +43,20 @@ function createDefaultModel() {
       }
     ]
   };
-}
+};
+const model = reactive(createDefaultModel());
 
-function handleInitModel() {
+const handleInitModel = () => {
   Object.assign(model, createDefaultModel());
-
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model, props.rowData);
   }
-}
-const onContentChange = (value: string) => {
-  model.content = value;
 };
 
-// const onAnswerChange = (value: string) => {
-//   model.answer = value;
-// };
-function closeDrawer() {
+const closeDrawer = () => {
   visible.value = false;
-}
+};
+
 const onCreate = () => {
   return {
     input: '',
@@ -69,24 +64,21 @@ const onCreate = () => {
   };
 };
 
-async function handleSubmit() {
-  // request
-  // const res = updatePage
-  //   ? await QuestionControllerService.updateQuestionUsingPost(form.value)
-  //   : await QuestionControllerService.addQuestionUsingPost(form.value);
-  //
-  // if (res.code === 0) {
-  //   message.success(updatePage ? '更新成功' : '创建成功');
-  // } else {
-  //   message.error((updatePage ? '更新失败，' : '创建失败，') + res.message);
-  // }
-  const { error } = await fetchUpdateQuestion(model);
-  if (!error) {
-    window.$message?.success('更新成功');
+const handleSubmit = async () => {
+  if (props.operateType === 'edit') {
+    const { error } = await fetchUpdateQuestion(model);
+    if (!error) {
+      window.$message?.success('更新成功');
+    }
+  } else {
+    const { error } = await fetchAddQuestion(model);
+    if (!error) {
+      window.$message?.success('添加成功');
+    }
   }
   closeDrawer();
   emit('submitted');
-}
+};
 
 watch(visible, () => {
   if (visible.value) {
@@ -98,8 +90,7 @@ watch(visible, () => {
 <template>
   <NDrawer v-model:show="visible" display-directive="show" :width="900">
     <NDrawerContent :title="title" :native-scrollbar="false" closable>
-      {{ model.content }}
-      <NForm :model="rowData" label-placement="left" label-width="100">
+      <NForm :model="model" label-placement="left" label-width="100">
         <NFormItem label="标题" path="title" required>
           <NInput v-model:value="model.title" placeholder="请输入标题" />
         </NFormItem>
@@ -107,7 +98,7 @@ watch(visible, () => {
           <NDynamicTags v-model:value="model.tags" type="primary" />
         </NFormItem>
         <NFormItem label="题目内容" path="content">
-          <MdEditor :value="model.content" @handle-change="onContentChange" />
+          <MdEditor v-model:content="model.content" :visible />
         </NFormItem>
         <!--        <NFormItem label="答案" path="answer">-->
         <!--          <MdEditor :value="model.answer" @handle-change="onAnswerChange" />-->

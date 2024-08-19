@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { NButton, NPopconfirm, NTag } from 'naive-ui';
 import { h } from 'vue';
-import { fetchGetQuestionVOList } from '@/service/api';
+import { fetchBatchDeleteQuestion, fetchDeleteQuestion, fetchGetQuestionVOList } from '@/service/api';
 import { $t } from '@/locales';
 import { useAppStore } from '@/store/modules/app';
 // import { enableStatusRecord, userGenderRecord } from '@/constants/business';
@@ -19,6 +19,18 @@ const goDoQuestion = (id: string, title: string) => {
     params: { id }
   });
 };
+
+const handleDelete = async (id: string) => {
+  const { error } = await fetchDeleteQuestion(id);
+  if (!error) {
+    await onDeleted();
+  }
+};
+
+const edit = (id: string) => {
+  handleEdit(id);
+};
+
 const {
   columns,
   columnChecks,
@@ -127,23 +139,12 @@ const {
   // closeDrawer
 } = useTableOperate(data, getData);
 
-async function handleBatchDelete() {
-  // request
-  console.log(checkedRowKeys.value);
-
-  onBatchDeleted();
-}
-
-function handleDelete(id: string) {
-  // request
-  console.log(id);
-
-  onDeleted();
-}
-
-function edit(id: string) {
-  handleEdit(id);
-}
+const handleBatchDelete = async () => {
+  const { error } = await fetchBatchDeleteQuestion(checkedRowKeys.value);
+  if (!error) {
+    await onBatchDeleted();
+  }
+};
 </script>
 
 <template>

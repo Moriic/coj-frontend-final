@@ -155,8 +155,7 @@ const local: App.I18n.Schema = {
     500: '服务器错误',
     'iframe-page': '外链页面',
     home: '首页',
-    question: '题目',
-    submit: '提交',
+    question: '题库',
     'do-question': '做题'
   },
   page: {

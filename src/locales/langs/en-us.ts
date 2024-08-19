@@ -156,7 +156,6 @@ const local: App.I18n.Schema = {
     'iframe-page': 'Iframe',
     home: 'Home',
     question: 'Question',
-    submit: 'Submit',
     'do-question': 'DoQuestion'
   },
   page: {

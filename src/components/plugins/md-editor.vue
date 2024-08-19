@@ -1,66 +1,59 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import Vditor from 'vditor';
 import 'vditor/dist/index.css';
 import { useThemeStore } from '@/store/modules/theme';
 
 const theme = useThemeStore();
 
-interface Emits {
-  (e: 'handleChange', v: string): void;
-}
-
-const emit = defineEmits<Emits>();
-
 interface Props {
-  value?: string;
+  visible?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  value: ''
-});
+const props = defineProps<Props>();
+const content = defineModel<string>('content');
 
 const vditor = ref<Vditor>();
 const domRef = ref<HTMLElement>();
 
-function renderVditor() {
+const renderVditor = () => {
   if (!domRef.value) return;
   vditor.value = new Vditor(domRef.value, {
     minHeight: 400,
     theme: theme.darkMode ? 'dark' : 'classic',
     icon: 'material',
     cache: { enable: false },
+    preview: {
+      theme: {
+        current: theme.darkMode ? 'dark' : 'light'
+      }
+    },
     after() {
-      vditor.value?.setValue(props.value);
+      vditor.value?.setValue(content.value);
     },
     input(value) {
-      emit('handleChange', value);
+      content.value = value;
     }
   });
-}
-
-watch(
-  () => props.value,
-  () => {
-    vditor.value?.setValue(props.value);
-  }
-);
-
-const stopHandle = watch(
-  () => theme.darkMode,
-  newValue => {
-    const themeMode = newValue ? 'dark' : 'classic';
-    vditor.value?.setTheme(themeMode);
-  }
-);
+};
 
 onMounted(() => {
   renderVditor();
 });
 
-onUnmounted(() => {
-  stopHandle();
-});
+watch(
+  () => props.visible,
+  () => {
+    vditor.value?.setValue(content.value);
+  }
+);
+
+watch(
+  () => theme.darkMode,
+  () => {
+    vditor.value?.setTheme(theme.darkMode ? 'dark' : 'classic', theme.darkMode ? 'dark' : 'light');
+  }
+);
 </script>
 
 <template>

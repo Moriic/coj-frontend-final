@@ -47,7 +47,8 @@ export const generatedRoutes: GeneratedRoute[] = [
       title: 'do-question',
       i18nKey: 'route.do-question',
       hideInMenu: true,
-      keepAlive: true
+      keepAlive: true,
+      icon: 'mdi:file-document-edit-outline'
     },
     props: true
   },
@@ -97,16 +98,6 @@ export const generatedRoutes: GeneratedRoute[] = [
       order: 2,
       roles: ['admin'],
       keepAlive: true
-    }
-  },
-  {
-    name: 'submit',
-    path: '/submit',
-    component: 'layout.base$view.submit',
-    meta: {
-      title: 'submit',
-      i18nKey: 'route.submit',
-      order: 3
     }
   }
 ];
