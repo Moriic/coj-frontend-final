@@ -11,17 +11,18 @@ jobs:
     steps:
       - name: 迁出代码
         uses: actions/checkout@main
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
       - name: 安装node.js
         uses: actions/setup-node@main
         with:
           node-version: lts/*
-
+          cache: 'pnpm'
       # 安装依赖
-      - name: 安装依赖
-        run: npm install
-      # 打包
-      - name: 打包
-        run: npm run build
+      - run: pnpm install --no-frozen-lockfile
+      - name: Build
+        run: pnpm run build
       # 上传到服务器
       - name: 发布到服务器
         uses: easingthemes/ssh-deploy@main
