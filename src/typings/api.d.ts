@@ -175,8 +175,8 @@ declare namespace Api {
     };
 
     export type JudgeInfo = {
-      memory?: number;
       message?: string;
+      memory?: number;
       time?: number;
     };
   }

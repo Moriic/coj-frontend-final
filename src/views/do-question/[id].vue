@@ -46,6 +46,7 @@ const activeTab = ref();
 const question = ref<Api.Question.QuestionVO | null>();
 const submitRecord = ref<Api.Question.QuestionSubmitVO[] | null>();
 const visible = ref(false);
+const submitDetail = ref<Api.Question.QuestionSubmitVO>();
 let intervalId: any;
 const options = [
   {
@@ -107,6 +108,8 @@ const recordColumns: DataTableColumns<Api.Question.QuestionSubmitVO> = [
           type: 'primary',
           size: 'small',
           onClick: () => {
+            row.errorMessage?.replace(' ', '&nbsp');
+            submitDetail.value = row;
             visible.value = true;
           }
         },
@@ -126,6 +129,7 @@ const loading: QuestionSubmitVO = {
   language: submitParams.value.language,
   createTime: '---'
 };
+
 const getQuestion = async () => {
   const { data } = await fetchGetQuestionVOById(props.id);
   question.value = data;
@@ -167,44 +171,60 @@ onMounted(() => {
 </script>
 
 <template>
-  <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive>
-    <NGi span="24 s:24 m:12">
-      <div class="h-full min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-        <NCard class="sm:flex-1-hidden card-wrapper card-wrapper" content-style="padding: 0px 20px">
-          <NTabs v-model:value="activeTab" type="line" animated>
-            <NTabPane name="description" tab="题目描述">
-              <MdViewer :value="question?.content || ''"></MdViewer>
-            </NTabPane>
-            <NTabPane name="submitRecord" tab="提交记录">
-              <NDataTable :columns="recordColumns" :data="submitRecord" />
-            </NTabPane>
-            <NTabPane name="answer" tab="题解" disabled></NTabPane>
-          </NTabs>
-        </NCard>
-      </div>
-    </NGi>
-    <NGi span="24 s:24 m:12">
-      <div class="h-full min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-        <NCard class="sm:flex-1-hidden card-wrapper card-wrapper" size="small">
-          <template #header>
-            <div class="flex justify-between p-x-10px">
-              <div class="flex gap-5">
-                <span>代码编写</span>
-                <NSelect v-model:value="submitParams.language" size="small" :options="options" class="w-100px" />
+  <div>
+    <NGrid :x-gap="gap" :y-gap="16" responsive="screen" item-responsive class="h-full">
+      <NGi span="24 s:24 m:12">
+        <div class="h-full min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+          <NCard class="sm:flex-1-hidden card-wrapper" content-style="padding: 0px 20px">
+            <NTabs v-model:value="activeTab" type="line" animated>
+              <NTabPane name="description" tab="题目描述">
+                <MdViewer :value="question?.content || ''"></MdViewer>
+              </NTabPane>
+              <NTabPane name="submitRecord" tab="提交记录">
+                <NDataTable :columns="recordColumns" :data="submitRecord" />
+              </NTabPane>
+              <NTabPane name="answer" tab="题解" disabled></NTabPane>
+            </NTabs>
+          </NCard>
+        </div>
+      </NGi>
+      <NGi span="24 s:24 m:12">
+        <div class="h-full min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+          <NCard class="sm:flex-1-hidden card-wrapper" size="small">
+            <template #header>
+              <div class="flex justify-between p-x-10px">
+                <div class="flex gap-5">
+                  <span>代码编写</span>
+                  <NSelect v-model:value="submitParams.language" size="small" :options="options" class="w-100px" />
+                </div>
+                <NButton strong size="small" round type="success" @click="submitQuestion">提交代码</NButton>
               </div>
-              <NButton strong size="small" round type="success" @click="submitQuestion">提交代码</NButton>
-            </div>
-          </template>
+            </template>
 
-          <CodeEditor
-            :value="submitParams.code as string"
-            :language="submitParams.language"
-            :handle-change="changeCode"
-          />
-        </NCard>
-      </div>
-    </NGi>
-  </NGrid>
+            <CodeEditor
+              :value="submitParams.code as string"
+              :language="submitParams.language"
+              :handle-change="changeCode"
+            />
+          </NCard>
+        </div>
+      </NGi>
+    </NGrid>
+    <NDrawer v-model:show="visible" width="50%">
+      <NDrawerContent title="提交详情" :native-scrollbar="false" closable>
+        <NAlert v-if="submitDetail.judgeInfo.message === 'Accepted'" title="Accepted" type="success"></NAlert>
+        <NAlert
+          v-else
+          style="white-space: pre-wrap; font-family: Menlo, sans-serif"
+          :title="submitDetail.judgeInfo.message"
+          type="error"
+        >
+          {{ submitDetail?.errorMessage }}
+        </NAlert>
+        <CodeViewer :language="submitDetail?.language" :value="submitDetail?.code" class="m-y-20px" />
+      </NDrawerContent>
+    </NDrawer>
+  </div>
 </template>
 
 <style scoped></style>

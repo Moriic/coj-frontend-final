@@ -30,6 +30,11 @@ const renderVditor = () => {
     },
     after() {
       vditor.value?.setValue(content.value);
+      vditor.value?.setTheme(
+        theme.darkMode ? 'dark' : 'classic',
+        theme.darkMode ? 'dark' : 'light',
+        theme.darkMode ? 'native' : 'abap'
+      );
     },
     input(value) {
       content.value = value;
@@ -51,7 +56,11 @@ watch(
 watch(
   () => theme.darkMode,
   () => {
-    vditor.value?.setTheme(theme.darkMode ? 'dark' : 'classic', theme.darkMode ? 'dark' : 'light');
+    vditor.value?.setTheme(
+      theme.darkMode ? 'dark' : 'classic',
+      theme.darkMode ? 'dark' : 'light',
+      theme.darkMode ? 'native' : 'abap'
+    );
   }
 );
 </script>

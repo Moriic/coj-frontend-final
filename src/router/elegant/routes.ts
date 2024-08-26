@@ -55,10 +55,13 @@ export const generatedRoutes: GeneratedRoute[] = [
   {
     name: 'home',
     path: '/home',
+    redirect: '/question',
     component: 'layout.base$view.home',
     meta: {
       title: 'home',
       i18nKey: 'route.home',
+      constant: true,
+      hideInMenu: true,
       icon: 'mdi:monitor-dashboard',
       order: 1
     }
@@ -95,6 +98,7 @@ export const generatedRoutes: GeneratedRoute[] = [
     meta: {
       title: 'question',
       i18nKey: 'route.question',
+      icon: 'fluent:book-information-24-regular',
       order: 2,
       roles: ['admin'],
       keepAlive: true

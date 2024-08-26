@@ -83,10 +83,10 @@ declare module "@elegant-router/types" {
     | "403"
     | "404"
     | "500"
+    | "home"
     | "iframe-page"
     | "login"
     | "do-question"
-    | "home"
     | "question"
   >;
 

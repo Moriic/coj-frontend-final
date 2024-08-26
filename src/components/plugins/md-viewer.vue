@@ -14,7 +14,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const domRef = ref<HTMLDivElement>();
-// let vditor = null
 const renderMarkdown = () => {
   Vditor.preview(domRef.value, props.value, {
     theme: {
@@ -37,7 +36,11 @@ watch(
 watch(
   () => theme.darkMode,
   () => {
-    renderMarkdown();
+    Vditor.setContentTheme(
+      theme.darkMode ? 'dark' : 'light',
+      'https://cdn.jsdelivr.net/npm/vditor/dist/css/content-theme'
+    );
+    Vditor.setCodeTheme(theme.darkMode ? 'native' : 'abap', 'https://cdn.jsdelivr.net/npm/vditor');
   }
 );
 </script>
