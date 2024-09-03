@@ -46,7 +46,7 @@ const {
   showTotal: true,
   apiParams: {
     current: 1,
-    pageSize: 10,
+    size: 10,
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
     tags: null,
@@ -62,19 +62,16 @@ const {
     {
       key: 'index',
       title: '序号',
-      align: 'center',
       width: 64
     },
     {
       key: 'title',
       title: '题目名称',
-      align: 'center',
       minWidth: 100
     },
     {
       key: 'tags',
       title: '标签',
-      align: 'center',
       render: row => {
         return row.tags.map((tag: string, index: number) =>
           h(
@@ -94,7 +91,6 @@ const {
     {
       key: 'passRate',
       title: '通过率',
-      align: 'center',
       render: row => {
         return row.submitNum === 0 ? '0.0%' : `${((row.acceptedNum / row.submitNum) * 100).toFixed(2)}%`;
       }
@@ -102,9 +98,8 @@ const {
     {
       key: 'operate',
       title: $t('common.operate'),
-      align: 'center',
       render: row => (
-        <div class="flex-center gap-8px">
+        <div class="flex gap-8px">
           <NButton type="primary" size="small" onClick={() => goDoQuestion(row.id, row.title)}>
             做题
           </NButton>

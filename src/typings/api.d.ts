@@ -12,7 +12,7 @@ declare namespace Api {
       /** current page number */
       current: number;
       /** page size */
-      pageSize: number;
+      size: number;
       /** total count */
       total: number;
     }

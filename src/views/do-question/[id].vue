@@ -48,6 +48,7 @@ const submitRecord = ref<Api.Question.QuestionSubmitVO[] | null>();
 const visible = ref(false);
 const submitDetail = ref<Api.Question.QuestionSubmitVO>();
 let intervalId: any;
+const submitDisabled = ref<boolean>(false);
 const options = [
   {
     value: 'java',
@@ -150,11 +151,13 @@ const submitQuestion = async () => {
     window.$message?.success('提交成功');
     submitRecord.value?.unshift(loading);
     activeTab.value = 'submitRecord';
+    submitDisabled.value = true;
     intervalId = setInterval(async () => {
       const { data: submit } = await fetchGetSubmitById(id);
       if (submit?.status === 2 || submit?.status === 3) {
         clearInterval(intervalId); // 停止定时器
         await getSubmitRecord();
+        submitDisabled.value = false;
       }
     }, 2000); // 每隔 2 秒执行一次
   }
@@ -197,7 +200,9 @@ onMounted(() => {
                   <span>代码编写</span>
                   <NSelect v-model:value="submitParams.language" size="small" :options="options" class="w-100px" />
                 </div>
-                <NButton strong size="small" round type="success" @click="submitQuestion">提交代码</NButton>
+                <NButton strong size="small" round type="success" :disabled="submitDisabled" @click="submitQuestion">
+                  提交代码
+                </NButton>
               </div>
             </template>
 
